@@ -57,45 +57,123 @@ class PublicPageLayout extends StatelessWidget {
         onSelected: (page) => _openPage(context, page),
       ),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF080B0C),
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF07110F),
         surfaceTintColor: Colors.transparent,
-        toolbarHeight: 76,
-        leading: Builder(
-          builder: (drawerContext) => Center(
-            child: Material(
-              color: Colors.transparent,
-              child: Tooltip(
-                message: 'Open navigation menu',
-                child: InkWell(
-                  onTap: () => Scaffold.of(drawerContext).openDrawer(),
-                  borderRadius: BorderRadius.circular(4),
-                  hoverColor: const Color(0xFF20292B),
-                  child: const SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: Center(
-                      child: Icon(Icons.menu_rounded,
-                          size: 23, color: AppTheme.primaryText),
+        elevation: 0,
+        toolbarHeight: 80,
+        titleSpacing: MediaQuery.sizeOf(context).width < 600 ? 12 : 28,
+        flexibleSpace: const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.topRight,
+              colors: [
+                Color(0xFF080D0C),
+                Color(0xFF0A1F1A),
+                Color(0xFF074333),
+              ],
+              stops: [0, 0.6, 1],
+            ),
+          ),
+        ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/logo_peak.png',
+              width: MediaQuery.sizeOf(context).width < 600 ? 42 : 54,
+              height: MediaQuery.sizeOf(context).width < 600 ? 42 : 54,
+              semanticLabel: 'PeakGym logo',
+            ),
+            const SizedBox(width: 14),
+            Container(
+              width: 1,
+              height: 42,
+              color: const Color(0x805D897B),
+            ),
+            const SizedBox(width: 14),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PeakGym',
+                  style: TextStyle(
+                    color: AppTheme.primaryText,
+                    fontSize: MediaQuery.sizeOf(context).width < 600 ? 18 : 24,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+                if (MediaQuery.sizeOf(context).width >= 600)
+                  const Text(
+                    'MANAGEMENT SYSTEM',
+                    style: TextStyle(
+                      color: Color(0xFFACC7BC),
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2.2,
                     ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          Builder(
+            builder: (drawerContext) => Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: OutlinedButton(
+                  onPressed: () => Scaffold.of(drawerContext).openDrawer(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primaryText,
+                    backgroundColor: const Color(0xAA0B3329),
+                    side: const BorderSide(
+                      color: Color(0xFF11CBA5),
+                      width: 1.5,
+                    ),
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 17,
+                      vertical: 12,
+                    ),
+                    minimumSize: const Size(0, 46),
+                  ).copyWith(
+                    overlayColor: WidgetStateProperty.all(
+                      const Color(0x3311CBA5),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.menu_rounded, size: 22),
+                      const SizedBox(width: 9),
+                      const Text(
+                        'Menu',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (MediaQuery.sizeOf(context).width >= 600) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.keyboard_arrow_down_rounded, size: 19),
+                      ],
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        title: Image.asset(
-          'assets/logo_peak.png',
-          width: 54,
-          height: 54,
-          semanticLabel: 'PeakGym logo',
-        ),
-        // Login is available from the public navigation drawer instead.
+        ],
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
           child: Divider(
             height: 1,
             thickness: 1,
-            color: Color(0xFF26342F),
+            color: Color(0xFF206451),
           ),
         ),
       ),
