@@ -22,7 +22,7 @@ if str(BACKEND) not in sys.path:
 from app.database import SessionLocal  # noqa: E402
 from app.models.activity_log import ActivityLog  # noqa: E402
 from app.models.security_flag import SecurityFlag  # noqa: E402
-from app.security.policy import IP_BLOCK_THRESHOLD  # noqa: E402
+from app.security.policy import IP_BLOCK_THRESHOLD, IP_BLOCK_WINDOW_MINUTES  # noqa: E402
 
 PHT = ZoneInfo("Asia/Manila")
 FAILED_LOGIN_TYPES = {"login_failed", "LOGIN_FAILED"}
@@ -74,14 +74,32 @@ def analyze(events: list, now: datetime) -> list[dict]:
                     },
                 })
 
+    # Match the actual IP-blocking rule: failures within one rolling window.
     for ip, failures in sorted(ip_events.items()):
-        if len(failures) >= IP_BLOCK_THRESHOLD:
-            usernames = {e.username_typed for e in failures if e.username_typed}
+        window = deque()
+        peak_window = []
+        for event in failures:
+            window.append(event)
+            while (window and event.created_at - window[0].created_at >
+                   timedelta(minutes=IP_BLOCK_WINDOW_MINUTES)):
+                window.popleft()
+            if len(window) > len(peak_window):
+                peak_window = list(window)
+        if len(peak_window) >= IP_BLOCK_THRESHOLD:
+            usernames = {e.username_typed for e in peak_window if e.username_typed}
             findings.append({
                 "pattern": "ip_over_threshold", "target": ip,
                 "severity": "HIGH",
-                "description": f"{len(failures)} failed logins from one IP (threshold {IP_BLOCK_THRESHOLD})",
-                "evidence": {"failures": len(failures), "usernames": len(usernames)},
+                "description": (
+                    f"{len(peak_window)} failed logins within {IP_BLOCK_WINDOW_MINUTES} "
+                    f"minutes from one IP (threshold {IP_BLOCK_THRESHOLD})"
+                ),
+                "evidence": {
+                    "failures_in_window": len(peak_window),
+                    "window_start": peak_window[0].created_at.isoformat(timespec="seconds"),
+                    "window_end": peak_window[-1].created_at.isoformat(timespec="seconds"),
+                    "usernames": len(usernames),
+                },
             })
 
     for username, ips in sorted(user_failure_ips.items()):
