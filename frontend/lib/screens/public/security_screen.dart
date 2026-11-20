@@ -9,36 +9,59 @@ class SecurityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const PublicPageLayout(
       currentPage: 'Security',
-      title: 'Protect your account',
-      subtitle: 'Good account habits help protect gym information.',
+      title: 'Your account security',
+      subtitle: 'Learn how PeakGym protects sign-ins, sessions, and staff information.',
       children: [
         PublicInfoCard(
-          icon: Icons.lock_outline,
-          title: 'Keep your credentials private',
+          icon: Icons.verified_user_outlined,
+          title: 'Secure sign-in verification',
           description:
-              'Use your assigned account and do not share your password. '
-              'Avoid saving credentials on a shared computer.',
+              'Sign in using your username and password, complete the '
+              'reCAPTCHA check, and enter the six-digit verification code '
+              'sent to your registered email. The login code expires after '
+              '3 minutes.',
         ),
         PublicInfoCard(
           icon: Icons.timer_outlined,
-          title: 'Temporary account lockout',
+          title: 'Progressive account lockouts',
           description:
-              'After five incorrect password attempts, the account is '
-              'temporarily locked for 60 seconds. Wait before trying again.',
+              'Incorrect passwords trigger temporary account lockouts at '
+              '3, 6, and 9 failed attempts: 18, 36, and 72 seconds, '
+              'respectively. Wait for the countdown before trying again.',
+        ),
+        PublicInfoCard(
+          icon: Icons.shield_outlined,
+          title: 'IP protection and security alerts',
+          description:
+              'Repeated failed logins from the same IP address may cause '
+              'a temporary block. PeakGym records security events and '
+              'sends alerts to help administrators review suspicious activity.',
+        ),
+        PublicInfoCard(
+          icon: Icons.key_outlined,
+          title: 'Password recovery',
+          description:
+              'The Forgot password? link appears after two failed '
+              'credential attempts. Password recovery verifies your '
+              'security-question answer and a code sent to your '
+              'registered email before allowing a new password.',
         ),
         PublicInfoCard(
           icon: Icons.logout,
-          title: 'Log out after use',
+          title: 'Session and password safety',
           description:
-              'Always log out when you finish, especially on a computer '
-              'used by other people.',
+              'Keep passwords and verification codes private. PeakGym '
+              'protects authenticated sessions and signs out inactive '
+              'users after the configured idle timeout. Always log out '
+              'when finished, especially on shared devices.',
         ),
         PublicInfoCard(
-          icon: Icons.support_agent,
-          title: 'Report account concerns',
+          icon: Icons.privacy_tip_outlined,
+          title: 'Privacy and role-based access',
           description:
-              'Contact your gym administrator if you suspect someone '
-              'else has used your account or you need access assistance.',
+              'Staff registration requires a private invitation and '
+              'privacy consent. Access is limited by account role, '
+              'and security activity is recorded for administrator review.',
         ),
       ],
     );
