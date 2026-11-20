@@ -13,19 +13,27 @@ class AboutScreen extends StatelessWidget {
       title: 'About PeakGym',
       subtitle: 'Learn more about our gym and what makes us different.',
       children: [
-        _sectionLabel('OUR STORY'),
-        const SizedBox(height: 16),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(26),
           decoration: BoxDecoration(
-            color: AppTheme.cardBackground,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.borderColor),
+            color: const Color(0xE111201D),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0x9958796D)),
           ),
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'OUR STORY',
+                style: TextStyle(
+                  color: AppTheme.primaryGreen,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2,
+                ),
+              ),
+              SizedBox(height: 12),
               Text(
                 'Growing stronger with our community.',
                 style: TextStyle(
@@ -206,9 +214,9 @@ class AboutScreen extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: const Color(0xFF10231E),
+        color: const Color(0xE112211E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF254339)),
+        border: Border.all(color: const Color(0x99507466)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,9 +252,9 @@ class AboutScreen extends StatelessWidget {
       width: width,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppTheme.cardBackground,
+        color: const Color(0xE112211E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderColor),
+        border: Border.all(color: const Color(0x99507466)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
