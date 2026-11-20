@@ -61,10 +61,26 @@ class PublicPageLayout extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         toolbarHeight: 76,
         leading: Builder(
-          builder: (drawerContext) => IconButton(
-            tooltip: 'Open navigation menu',
-            onPressed: () => Scaffold.of(drawerContext).openDrawer(),
-            icon: const Icon(Icons.menu_rounded, color: AppTheme.primaryText),
+          builder: (drawerContext) => Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Tooltip(
+                message: 'Open navigation menu',
+                child: InkWell(
+                  onTap: () => Scaffold.of(drawerContext).openDrawer(),
+                  borderRadius: BorderRadius.circular(4),
+                  hoverColor: const Color(0xFF20292B),
+                  child: const SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(
+                      child: Icon(Icons.menu_rounded,
+                          size: 23, color: AppTheme.primaryText),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         title: Image.asset(
