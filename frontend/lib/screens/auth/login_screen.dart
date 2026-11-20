@@ -541,6 +541,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   Widget _buildNavigation() {
     return Align(
       alignment: Alignment.centerLeft,
@@ -555,11 +556,15 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: _isLoading
               ? null
               : () => _scaffoldKey.currentState?.openDrawer(),
-          icon: const Icon(Icons.menu_rounded, color: AppTheme.primaryText),
+          icon: const Icon(
+            Icons.menu_rounded,
+            color: AppTheme.primaryText,
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildIntroduction({required bool compact}) {
     return Column(
