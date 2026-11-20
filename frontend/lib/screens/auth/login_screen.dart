@@ -543,24 +543,91 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   Widget _buildNavigation() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.cardBackground,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.borderColor),
-        ),
-        child: IconButton(
-          tooltip: 'Open navigation menu',
-          onPressed: _isLoading
-              ? null
-              : () => _scaffoldKey.currentState?.openDrawer(),
-          icon: const Icon(
-            Icons.menu_rounded,
-            color: AppTheme.primaryText,
+    return Transform.translate(
+      offset: const Offset(0, 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(width: 18),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: const Color(0xCC131719),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppTheme.primaryGreen,
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              tooltip: 'Open navigation menu',
+              onPressed: _isLoading
+                  ? null
+                  : () => _scaffoldKey.currentState?.openDrawer(),
+              style: IconButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                hoverColor: const Color(0x2400C9A7),
+                highlightColor: const Color(0x3300C9A7),
+              ),
+              icon: const Icon(
+                Icons.menu_rounded,
+                color: AppTheme.primaryText,
+                size: 25,
+              ),
+            ),
           ),
-        ),
+          const SizedBox(width: 16),
+          const SizedBox(
+            height: 44,
+            child: VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: Color(0xFF62746A),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Image.asset(
+            'assets/logo_peak.png',
+            width: 52,
+            height: 52,
+            fit: BoxFit.contain,
+            semanticLabel: 'PeakGym logo',
+          ),
+          const SizedBox(width: 12),
+          const Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PeakGym',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppTheme.primaryText,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                Text(
+                  'MANAGEMENT SYSTEM',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(0xFFB7C8BF),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 2.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
