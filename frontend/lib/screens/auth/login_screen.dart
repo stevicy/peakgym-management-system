@@ -7,6 +7,9 @@ import 'forgot_password_screen.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/widgets/recaptcha_v2.dart';
 import '../../core/storage/token_storage.dart';
+import '../../core/storage/failed_login_storage_native.dart'
+    if (dart.library.js_interop) '../../core/storage/failed_login_storage_web.dart'
+    as failed_login_storage;
 import '../../core/theme/app_theme.dart';
 import '../admin/admin_dashboard.dart';
 import '../public/public_navigation.dart';
@@ -44,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _showRegistration = false;
   bool _showForgotPassword = false;
+  int _failedCredentialAttempts = 0;
   String _invitationToken = '';
 
   Timer? _lockoutTimer;
@@ -53,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _failedCredentialAttempts = failed_login_storage.readFailedLoginCount();
 
     final uri = Uri.base;
 
@@ -213,6 +218,19 @@ class _LoginScreenState extends State<LoginScreen> {
           caseSensitive: false,
         ).firstMatch(message);
         final seconds = int.tryParse(match?.group(1) ?? '') ?? 0;
+        // A failed password counts even if it triggers a lockout tier.
+        // CAPTCHA, mail delivery errors and already-active locks do not count.
+        final invalidCredentials = response['status_code'] == 401 &&
+            message == 'Invalid username or password.';
+        final justTriggeredAccountLockout = response['status_code'] == 429 &&
+            message.startsWith('Account locked for ');
+        if (invalidCredentials || justTriggeredAccountLockout) {
+          final count = _failedCredentialAttempts < 2
+              ? _failedCredentialAttempts + 1
+              : 2;
+          failed_login_storage.saveFailedLoginCount(count);
+          setState(() => _failedCredentialAttempts = count);
+        }
         if (seconds > 0) {
           _startLockoutCountdown(seconds);
         } else {
@@ -226,9 +244,11 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       refreshCaptcha = false; // OTP is now the active step.
+      failed_login_storage.saveFailedLoginCount(0);
       _passwordController.clear();
       _otpController.clear();
       setState(() {
+        _failedCredentialAttempts = 0;
         _otpMode = true;
         _errorMessage = null;
       });
@@ -992,33 +1012,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
             _buildLoginCaptcha(),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 6, bottom: 12),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _isLoading ? null : _openForgotPassword,
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    minimumSize: const Size(0, 32),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(
-                      color: AppTheme.primaryGreen,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+            const SizedBox(height: 20),
+
+            if (_failedCredentialAttempts >= 2)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _isLoading ? null : _openForgotPassword,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      minimumSize: const Size(0, 32),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        color: AppTheme.primaryGreen,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
             if (_errorMessage != null)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 14),
+                margin: const EdgeInsets.only(bottom: 18),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0x22FF6B6B),
