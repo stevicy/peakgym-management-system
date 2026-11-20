@@ -9,43 +9,71 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const PublicPageLayout(
       currentPage: 'Help',
-      title: 'How can we help?',
-      subtitle: 'Quick guidance for accessing your management account.',
+      title: 'Account help and recovery',
+      subtitle: 'Answers to common questions about signing in to PeakGym.',
       children: [
         PublicInfoCard(
           icon: Icons.person_outline,
           title: 'How do I log in?',
           description:
-              'Enter the username and password assigned by your gym '
-              'administrator. The current login uses your username.',
+              'Enter your PeakGym username and password, complete the '
+              'I\'m not a robot check, and select LOG IN. Then enter '
+              'the six-digit code sent to your registered email. '
+              'The login code expires after 3 minutes.',
         ),
         PublicInfoCard(
           icon: Icons.key_outlined,
-          title: 'Forgot your password?',
+          title: 'Where is Forgot password?',
           description:
-              'Contact your gym administrator for password assistance. '
-              'There is no self-service email reset on this screen.',
+              'The Forgot password? link becomes visible after two '
+              'incorrect username or password attempts. Missing CAPTCHA '
+              'verification and email delivery errors do not count as '
+              'failed password attempts.',
+        ),
+        PublicInfoCard(
+          icon: Icons.lock_reset_outlined,
+          title: 'How can I reset my password?',
+          description:
+              'Choose Forgot password?, identify your account, and '
+              'complete reCAPTCHA. Answer one of your registered '
+              'security questions, verify the email reset code, and '
+              'create a new password.',
         ),
         PublicInfoCard(
           icon: Icons.hourglass_bottom,
-          title: 'Account locked?',
+          title: 'Why is my account locked?',
           description:
-              'Wait 60 seconds after the lockout begins, then try '
-              'again with the correct credentials.',
+              'PeakGym applies 18-, 36-, and 72-second account '
+              'lockouts after 3, 6, and 9 failed passwords. Repeated '
+              'failures from the same IP may also temporarily block '
+              'new login attempts. Wait for the restriction to end.',
         ),
         PublicInfoCard(
-          icon: Icons.person_off_outlined,
-          title: 'Account inactive or need an account?',
+          icon: Icons.person_add_alt_1_outlined,
+          title: 'How do I create a staff account?',
           description:
-              'Ask your gym administrator to check your account '
-              'status or arrange access.',
+              'PeakGym does not allow public staff sign-up. Ask your '
+              'administrator for a private registration invitation. '
+              'Complete the registration fields, privacy consent, '
+              'CAPTCHA, and email verification.',
         ),
         PublicInfoCard(
-          icon: Icons.wifi_off,
-          title: 'Unable to connect?',
+          icon: Icons.mail_outline,
+          title: 'What if my email code does not arrive?',
           description:
-              'Ask the administrator to check that the management '
-              'service is available, then try again.',
+              'Check the email address registered with PeakGym and your '
+              'Spam or Junk folder. If the code expired, request a new '
+              'one when the resend option is available. Contact your '
+              'administrator if email delivery continues to fail.',
+        ),
+        PublicInfoCard(
+          icon: Icons.support_agent,
+          title: 'How do I change my password or get access help?',
+          description:
+              'Signed-in staff can change their password in Settings. '
+              'If your account is inactive, recovery is unavailable, '
+              'or you need administrator-account assistance, contact '
+              'the PeakGym administrator.',
         ),
       ],
     );
