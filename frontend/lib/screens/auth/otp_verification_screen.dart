@@ -166,6 +166,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   TextField(
                     controller: _code,
                     keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      if (!_busy && _secondsLeft > 0) {
+                        _verify();
+                      }
+                    },
                     maxLength: 6,
                     decoration: const InputDecoration(
                       labelText: 'Verification code',
