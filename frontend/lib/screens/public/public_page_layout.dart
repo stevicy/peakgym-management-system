@@ -289,8 +289,14 @@ class PublicPageLayout extends StatelessWidget {
                         const SizedBox(height: 45),
                         const Divider(color: Color(0x6657776A)),
                         const SizedBox(height: 18),
-                        Center(
-                          child: Column(
+                        SizedBox(
+                          width: double.infinity,
+                          child: Flex(
+                            direction: isWide ? Axis.horizontal : Axis.vertical,
+                            mainAxisAlignment: isWide
+                                ? MainAxisAlignment.spaceBetween
+                                : MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 '© ${DateTime.now().year} PeakGym Fitness. '
@@ -302,7 +308,7 @@ class PublicPageLayout extends StatelessWidget {
                                   height: 1.6,
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              SizedBox(height: isWide ? 0 : 5),
                               const Text(
                                 'Designed with passion for fitness',
                                 textAlign: TextAlign.center,
