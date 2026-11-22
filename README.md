@@ -1,2 +1,3 @@
 # peakgym-management-system
-PeakGym management system built with PHP and MySQL.
+
+PeakGym management system built with Flutter, FastAPI, and MySQL.
