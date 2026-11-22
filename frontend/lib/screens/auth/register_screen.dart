@@ -257,6 +257,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: _c(key),
       keyboardType: keyboardType,
+      textInputAction: key == 'postal_code' || key == 'security_answer_q1'
+          ? TextInputAction.done
+          : TextInputAction.next,
+      onFieldSubmitted: (_) {
+        if (key == 'postal_code' || key == 'security_answer_q1') {
+          _nextStep();
+        } else {
+          FocusScope.of(context).nextFocus();
+        }
+      },
       obscureText: secret && !_showPassword,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       style: const TextStyle(color: AppTheme.primaryText, fontSize: 13),
@@ -1173,6 +1183,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextField(
             controller: _c('otp_code'),
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) {
+              if (!_otpBusy && remaining > 0) {
+                _verifyOtp();
+              }
+            },
             maxLength: 6,
             decoration: const InputDecoration(
               labelText: 'Verification code',
