@@ -394,10 +394,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     List<TextInputFormatter>? inputFormatters,
     int? maxLength,
     ValueChanged<String>? onChanged,
+    VoidCallback? onSubmit,
+    bool moveNext = false,
   }) => TextField(
     controller: controller,
     enabled: true,
     keyboardType: keyboardType,
+    textInputAction: moveNext ? TextInputAction.next : TextInputAction.done,
+    onSubmitted: (_) {
+      if (moveNext) {
+        FocusScope.of(context).nextFocus();
+      } else {
+        onSubmit?.call();
+      }
+    },
     obscureText: obscure,
     inputFormatters: inputFormatters,
     maxLength: maxLength,
@@ -473,7 +483,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ],
         if (_step == 0) ...[
           _label('Username'),
-          _textField(controller: _usernameController, hint: 'Enter your username', maxLength: 50),
+          _textField(
+            controller: _usernameController,
+            hint: 'Enter your username',
+            maxLength: 50,
+            onSubmit: _identify,
+          ),
           const SizedBox(height: 17),
           _label('Security verification'),
           RecaptchaV2(
@@ -504,6 +519,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _textField(
             controller: _answerController,
             hint: 'Enter your registered answer',
+            moveNext: true,
             obscure: !_showAnswer,
             maxLength: 50,
             suffix: IconButton(
@@ -528,6 +544,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _textField(
             controller: _confirmAnswerController,
             hint: 'Re-enter the same answer',
+            onSubmit: _answerQuestion,
             obscure: !_showConfirmAnswer,
             maxLength: 50,
             suffix: IconButton(
@@ -554,6 +571,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _textField(
             controller: _otpController,
             hint: 'Enter 6-digit code',
+            onSubmit: _verifyCode,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
@@ -584,6 +602,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _textField(
             controller: _passwordController,
             hint: 'Enter a new password',
+            moveNext: true,
             obscure: !_showNewPassword,
             maxLength: 64,
             onChanged: (_) => setState(() {}),
@@ -608,6 +627,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _textField(
             controller: _confirmationController,
             hint: 'Re-enter the new password',
+            onSubmit: _completeReset,
             obscure: !_showConfirmation,
             maxLength: 64,
             suffix: IconButton(
