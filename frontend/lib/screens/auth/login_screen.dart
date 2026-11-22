@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -35,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _loginPanelFocusNode = FocusNode();
   final _otpController = TextEditingController();
 
   String? _recaptchaToken;
@@ -82,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _usernameController.dispose();
     _passwordController.dispose();
     _passwordFocusNode.dispose();
+    _loginPanelFocusNode.dispose();
     _otpController.dispose();
     super.dispose();
   }
@@ -706,44 +709,73 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginBox() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
-      decoration: BoxDecoration(
-        color: const Color(0xF2131719),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFF39433F)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 36,
-            offset: Offset(0, 18),
+    return Focus(
+      focusNode: _loginPanelFocusNode,
+      autofocus: true,
+      onKeyEvent: (_, event) {
+        if (event is! KeyDownEvent ||
+            (event.logicalKey != LogicalKeyboardKey.enter &&
+                event.logicalKey != LogicalKeyboardKey.numpadEnter)) {
+          return KeyEventResult.ignored;
+        }
+        if (_showRegistration || _showForgotPassword) {
+          return KeyEventResult.ignored;
+        }
+        if (_otpMode) {
+          _verifyLoginOtp();
+        } else {
+          _login();
+        }
+        return KeyEventResult.handled;
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          // Clicking empty card space restores keyboard focus to the login card.
+          if (!_showRegistration && !_showForgotPassword) {
+            _loginPanelFocusNode.requestFocus();
+          }
+        },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+          decoration: BoxDecoration(
+            color: const Color(0xF2131719),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: const Color(0xFF39433F)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x66000000),
+                blurRadius: 36,
+                offset: Offset(0, 18),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: SingleChildScrollView(
-        child: _showRegistration
-            ? ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: (MediaQuery.sizeOf(context).height * 0.74).clamp(
-                    300.0,
-                    700.0,
-                  ),
-                ),
-                child: RegisterScreen(
-                  key: ValueKey(_invitationToken),
-                  invitationToken: _invitationToken,
-                  embedded: true,
-                  onBackToLogin: _returnToLogin,
-                ),
-              )
-            : _showForgotPassword
-                ? ForgotPasswordScreen(
-                    onBackToLogin: _returnFromForgotPassword,
+          child: SingleChildScrollView(
+            child: _showRegistration
+                ? ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: (MediaQuery.sizeOf(context).height * 0.74).clamp(
+                        300.0,
+                        700.0,
+                      ),
+                    ),
+                    child: RegisterScreen(
+                      key: ValueKey(_invitationToken),
+                      invitationToken: _invitationToken,
+                      embedded: true,
+                      onBackToLogin: _returnToLogin,
+                    ),
                   )
-                : _otpMode
-                    ? _buildLoginOtpForm()
-                    : _buildLoginForm(),
+                : _showForgotPassword
+                    ? ForgotPasswordScreen(
+                        onBackToLogin: _returnFromForgotPassword,
+                      )
+                    : _otpMode
+                        ? _buildLoginOtpForm()
+                        : _buildLoginForm(),
+          ),
+        ),
       ),
     );
   }
@@ -805,6 +837,8 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: _otpController,
           enabled: !_isLoading,
           keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _verifyLoginOtp(),
           maxLength: 6,
           style: const TextStyle(
             color: AppTheme.primaryText,
@@ -992,7 +1026,8 @@ class _LoginScreenState extends State<LoginScreen> {
             TextFormField(
               controller: _usernameController,
               readOnly: false,
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _login(),
               autofillHints: const [AutofillHints.username],
               autocorrect: false,
               enableSuggestions: false,
