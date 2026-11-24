@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.user import User
+from app.models.pending_registration import PendingStaffRegistration
+from app.models.staff_profile import StaffProfile
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.routes.auth import get_current_user
 from app.schemas.user import UserUpdate
 
@@ -199,8 +202,34 @@ def delete_user(
             detail="Administrators cannot delete other administrator accounts"
         )
 
-    db.delete(user)
-    db.commit()
+    try:
+        # Preserve registration history without a deleted-user reference.
+        db.query(PendingStaffRegistration).filter(
+            PendingStaffRegistration.activated_user_id == user_id
+        ).update(
+            {PendingStaffRegistration.activated_user_id: None},
+            synchronize_session=False,
+        )
+
+        # Remove the staff profile before deleting its user.
+        db.query(StaffProfile).filter(
+            StaffProfile.user_id == user_id
+        ).delete(synchronize_session=False)
+
+        db.delete(user)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Staff account still has related records preventing deletion.",
+        ) from None
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to delete staff account.",
+        ) from None
 
     return {
         "message": "Staff account deleted successfully",
